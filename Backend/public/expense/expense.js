@@ -1,5 +1,5 @@
 
-const baseUrl = 'http://localhost:3000';
+const baseUrl = 'http://52.90.233.156:3000';
 
 
 const showpagination=async(data)=>{

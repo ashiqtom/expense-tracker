@@ -1,5 +1,5 @@
 
-const baseURL = 'http://localhost:3000/user'; 
+const baseURL = 'http://52.90.233.156:3000/user'; 
 
 const form = document.getElementById('signupForm');
 
