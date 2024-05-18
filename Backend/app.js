@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors'); 
-const hemet=require('helmet');
+const helmet=require('helmet');
 const morgan=require('morgan');
 const path = require('path');
 const fs=require('fs');
@@ -12,7 +12,20 @@ const sequelize = require('./util/database');
 app.use(bodyParser.json());
 app.use(cors()); 
 dotenv.config();
-app.use(hemet()); 
+app.use(helmet()); 
+
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://checkout.razorpay.com"],
+      connectSrc: ["'self'", "https://52.90.233.156:3000"]
+    }
+  }
+}));
+
+
 const accessLogStream=fs.createWriteStream(
   path.join(__dirname,'access.log'),
   {flags:'a'} 

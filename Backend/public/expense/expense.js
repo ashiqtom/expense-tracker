@@ -1,6 +1,7 @@
-
 const baseUrl = 'http://52.90.233.156:3000';
 
+
+//const baseUrl = 'http://localhost:3000';
 
 const showpagination=async(data)=>{
   try{
@@ -70,7 +71,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-async function handleFormSubmit(event) {
+document.getElementById('form').onsubmit=async(event)=> {
   event.preventDefault();
 
   const amount = document.getElementById('amount').value;
@@ -83,9 +84,8 @@ async function handleFormSubmit(event) {
     category: category 
   };
   try {
-    
     const token = localStorage.getItem('token');
-    const response = await axios.post(`${baseUrl}/expenses/post`, expenseObj,{headers:{"authorization":token}});
+    const response = await axios.post(`${baseUrl}/expenses/post`, expenseObj,{headers:{"authorization":token}});    
     displayExpenseOnScreen(response.data);
     event.target.reset();
   } catch (error) {
@@ -94,8 +94,7 @@ async function handleFormSubmit(event) {
 }
 
 async function displayExpenseOnScreen(expenseDetails) {
-  try{
-    console.log(expenseDetails)    
+  try{   
     const parentElem = document.getElementById('expenseList');
       
     const listItem = document.createElement('li');

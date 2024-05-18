@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -7,7 +7,7 @@
 </head>
 <body style="margin: 0">
   <h2><a href="../login/login.html">login</a></h2>
-  <form onsubmit="handleFormSubmit(event)">
+  <form id="form">
     <label for="amount">Choose expense amount:</label><br>
     <input type="number" name="amount" id="amount"/><br><br>
 
@@ -49,6 +49,6 @@
     <div id="DRecoardsPagination"></div>
   </div>
 </body>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
 <script src="expense.js"></script>
 </html>

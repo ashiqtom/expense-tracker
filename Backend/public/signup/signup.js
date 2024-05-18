@@ -1,5 +1,7 @@
 
-const baseURL = 'http://52.90.233.156:3000/user'; 
+const baseURL = 'http://52.90.233.156:3000'; 
+
+//const baseURL = 'http://localhost:3000';
 
 const form = document.getElementById('signupForm');
 
@@ -12,7 +14,7 @@ form.addEventListener('submit', async function(event) {
         formData.forEach((value, key) => {
             data[key] = value;
         });
-        const response = await axios.post(`${baseURL}/signup`, data);
+        const response = await axios.post(`${baseURL}/user/signup`, data);
         if(response.status === 201){
             alert(response.data.message)
             window.location.href = "../Login/login.html";
@@ -20,7 +22,8 @@ form.addEventListener('submit', async function(event) {
             throw new Error('Failed to login')
         }
     } catch (error) {
-        document.body.innerHTML += `<div style="color:red;">${error.response.data.err} <div>`;
+        console.log(error.response.data.err)
+        document.body.innerHTML += `<div style="color:red;">${error} <div>`;
             //dynamically adds a new <div> element to the end of the <body>
     }
 })

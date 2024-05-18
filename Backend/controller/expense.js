@@ -5,8 +5,8 @@ const sequelize = require('../util/database')
 
 exports.getExpence=async (req, res) => {
     try {
-      const page = +req.query.page;
-      const itemsPerPage = +req.query.itemsPerPage
+      const page = +req.query.page || 1;
+      const itemsPerPage = +req.query.itemsPerPage || 2;
       let totalaItems=await Expense.count({
         where: { UserId: req.user.id }
       });
