@@ -123,14 +123,14 @@ async function displayExpenseOnScreen(expenseDetails) {
 document.getElementById('rzp-button1').onclick = async function (e) {
   const token = localStorage.getItem('token');
   try {
-    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } });
+    const response = await axios.get(`${baseUrl}/purchase/premiummembership`, { headers: { "Authorization": token } });
 
     var options = {
       "key": response.data.key_id,
       "order_id": response.data.order.id,
       "handler": async function (response) {
         try {
-          await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
+          await axios.post(`${baseUrl}/purchase/updatetransactionstatus`, {
             order_id: options.order_id,
             payment_id: response.razorpay_payment_id,
           }, { headers: { "Authorization": token } });
@@ -149,7 +149,7 @@ document.getElementById('rzp-button1').onclick = async function (e) {
     rzp1.on('payment.failed', async function (response) {
       try {
         console.log(response);
-        await axios.post('http://localhost:3000/purchase/updateorderstatus', {
+        await axios.post(`${baseUrl}/purchase/updateorderstatus`, {
           order_id: options.order_id,
         }, { headers: { "Authorization": token } });
         alert('Payment failed. Your order status has been updated.');
@@ -197,7 +197,7 @@ const leaderBoardFuction=async()=>{
   try{
     const token = localStorage.getItem('token');
     const lbList = document.getElementById('lbList');
-    const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
+    const response = await axios.get(`${baseUrl}/premium/leaderBoard`, { headers: { "Authorization": token } });
     
     lbList.innerHTML = '';
     response.data.forEach(user => {
@@ -216,7 +216,7 @@ const leaderBoardFuction=async()=>{
 async function download(){
   try{
     const token = localStorage.getItem('token');
-    const response=await axios.get('http://localhost:3000/premium/download', { headers: {"Authorization" : token} })
+    const response=await axios.get(`${baseUrl}/premium/download`, { headers: {"Authorization" : token} })
     if(response.status === 201){
         let a = document.createElement("a");
         a.href = response.data.Location;
@@ -237,7 +237,7 @@ async function displayDrecoardsOnScreen() {
   try{
     DRecoardsDiv.style.display = 'block';
     const token = localStorage.getItem('token');
-    const DRecoard=await axios.get('http://localhost:3000/premium/downloadRecoard', { headers: {"Authorization" : token} })
+    const DRecoard=await axios.get(`${baseUrl}/premium/downloadRecoard`, { headers: {"Authorization" : token} })
     document.getElementById('DRecoards').innerHTML="";
 
     DRecoard.data.forEach(DRecoards => {

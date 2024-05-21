@@ -14,6 +14,7 @@ form.addEventListener('submit', async function(event) {
         formData.forEach((value, key) => {
             data[key] = value;
         });
+        console.log(data)
         const response = await axios.post(`${baseURL}/user/signup`, data);
         if(response.status === 201){
             alert(response.data.message)
