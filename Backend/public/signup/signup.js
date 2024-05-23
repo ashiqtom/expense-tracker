@@ -1,5 +1,5 @@
 
-const baseURL = 'http://52.90.233.156:3000'; 
+//const baseURL = 'http://52.90.233.156:3000'; 
 
 //const baseURL = 'http://localhost:3000';
 
@@ -15,7 +15,7 @@ form.addEventListener('submit', async function(event) {
             data[key] = value;
         });
         console.log(data)
-        const response = await axios.post(`${baseURL}/user/signup`, data);
+        const response = await axios.post(`/user/signup`, data);
         if(response.status === 201){
             alert(response.data.message)
             window.location.href = "../Login/login.html";

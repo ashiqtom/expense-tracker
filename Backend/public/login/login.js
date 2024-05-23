@@ -1,4 +1,4 @@
-const baseURL = 'http://52.90.233.156:3000'; 
+//const baseURL = 'http://52.90.233.156:3000'; 
 
 //const baseURL = 'http://localhost:3000';
 
@@ -12,7 +12,7 @@ form.addEventListener('submit', async function(event) {
         const email = formData.get('email');
         const password = formData.get('password');
 
-        const response = await axios.get(`${baseURL}/user/login/${email}/${password}`);
+        const response = await axios.get(`/user/login/${email}/${password}`);
         alert(response.data.message)
         localStorage.setItem('token',response.data.token)
         window.location.href = '../expense/expense.html';  
@@ -21,7 +21,6 @@ form.addEventListener('submit', async function(event) {
         document.body.innerHTML += `<div style="color:red;">${err.response.data.err} <div>`;
     }
 });
-
 document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
     document.getElementById('forgotPasswordForm').style.display = 'block';
 });
@@ -30,7 +29,7 @@ document.getElementById('sendResetEmailBtn').addEventListener('click', async () 
     const email = document.getElementById('emailInput').value;
 
     try {
-        const response = await axios.post(`${baseURL}/password/forgotpassword`, { email });
+        const response = await axios.post(`/password/forgotpassword`, { email });
         console.log(response.data)
         alert('Reset email sent successfully!');
         document.getElementById('forgotPasswordForm').style.display = 'none';
