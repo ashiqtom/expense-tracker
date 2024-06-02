@@ -2,13 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors'); 
 const path = require('path');
-const dotenv=require('dotenv');
+require('dotenv').config();
 const app = express();
-const sequelize = require('./util/database');
- 
 app.use(bodyParser.json());
 app.use(cors()); 
-dotenv.config();
+
+const sequelize = require('./util/database');
 
 const User = require('./models/user');
 const Expense = require('./models/expense');

@@ -3,11 +3,14 @@ const jwt = require('jsonwebtoken');
 
 exports.authenticate=async(req,res,next)=>{
     try{
-        console.log(req.url,'``````````````')
         const token=req.header('authorization');
-        const user=jwt.verify(token,'secretkey');
-        
+        const user=jwt.verify(token,process.env.jwtSecretkey);
+               
         const userDetails=await User.findByPk(user.userId)
+        if(!userDetails){
+            return res.status(400).json({err:'Invalid userid'});
+        }
+        
         req.user=userDetails;
         
         next();

@@ -2,6 +2,7 @@ const User = require('../models/user');
 const UserServices=require('../services/userservices');
 const S3Services=require('../services/S3services');
 const FileDownloaded=require('../models/filesDownloaded');
+const sequelize = require('../util/database');
  
 // exports.downloadRecoard=async (req, res) => { 
 //     try {
@@ -78,6 +79,28 @@ exports.getPremium = async (req, res) => {
     try {
       const isPremiumUser = req.user.ispremiumuser;
       if(isPremiumUser){
+        // const expenses = await Expense.findAll({
+          //     attributes: [
+          //       'UserId',
+          //       [sequelize.fn('sum', sequelize.col('amount')), 'total_cost']
+          //     ],
+          //     group: ['UserId']  
+          //   });
+          //use joints
+          //   const expensesUsingJoints = await User.findAll({
+          //     attributes: ['id','username', [sequelize.fn('sum', sequelize.col('Expenses.amount')), 'total_cost']],
+          //     include: [{
+          //       model: Expense,
+          //       attributes: [] 
+          //     }],
+          //     group: ['User.id'],
+          //     order: [['total_cost', 'DESC']]
+          //   });   
+          //   res.status(200).json({
+          //     expenses:expenses,
+          //     expensesUsingJoints:expensesUsingJoints
+          //   });
+
         const aggExp=await User.findAll({
           attributes:["username","totalExpense"],
           order:[["totalExpense",'DESC']]

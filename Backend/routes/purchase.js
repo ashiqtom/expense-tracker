@@ -12,7 +12,7 @@ router.get('/getStatus',authenticatemiddleware.authenticate,purchaseController.g
 
 router.post('/updatetransactionstatus', authenticatemiddleware.authenticate, purchaseController.updateTransactionStatus)
 
-router.post('/updateorderstatus', authenticatemiddleware.authenticate, purchaseController.updateOrderStatus)
+router.post('/updateFailedStatus', authenticatemiddleware.authenticate, purchaseController.updateFailedStatus)
 
 
 module.exports = router; 

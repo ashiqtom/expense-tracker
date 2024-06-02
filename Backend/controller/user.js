@@ -2,11 +2,20 @@ const User = require('../models/user');
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const stringValidate=(string)=>{
+    if(string===undefined || string.length===0){
+        return false;
+    }else{
+        return true;
+    }
+}
+
 exports.signupUser=async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        console.log(req.body,'`````````````')
-
+        if(!stringValidate(username)|| !stringValidate(email)||!stringValidate(password)){
+            return res.status(400).json({err:"bad request ,something is missing"});        
+        }
         const existingUser = await User.findOne({ where: { email } });
 
         if (existingUser) {
@@ -25,7 +34,10 @@ exports.signupUser=async (req, res) => {
 }
 exports.loginUser = async (req, res) => {
     try {
-        const { email, password} = req.params; 
+        const { email, password} = req.params;
+        if(!stringValidate(password)|| !stringValidate(email)){
+            return res.status(400).json({err:"bad request ,something is missing"});        
+        }
         const existingUser = await User.findOne({ where: { email } });
         
         if (!existingUser) {
@@ -45,5 +57,5 @@ exports.loginUser = async (req, res) => {
 };
 
 const generateAccessToken=(id,name)=>{
-    return jwt.sign({userId:id,name:name},'secretkey')
+    return jwt.sign({userId:id,name:name},process.env.jwtSecretkey)
 };

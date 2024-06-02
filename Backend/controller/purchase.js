@@ -1,5 +1,7 @@
 const Razorpay = require('razorpay');
-const Order = require('../models/order')
+const Order = require('../models/order');
+const sequelize = require('../util/database');
+const User = require('../models/user');
 
 
 exports.getTransactionStatus = async (req, res ) => {
@@ -33,7 +35,7 @@ exports.purchasepremium = async (req, res) => {
     }
 }
 
-exports.updateOrderStatus = async (req, res) => {
+exports.updateFailedStatus = async (req, res) => {
     try {
       const { order_id } = req.body;
       const order = await Order.findOne({ where: { orderid: order_id } });
@@ -46,21 +48,31 @@ exports.updateOrderStatus = async (req, res) => {
   };
 
 exports.updateTransactionStatus = async (req, res) => {
+    const t=await sequelize.transaction();
     try {
         const { payment_id, order_id } = req.body;
 
-        const order = await Order.findOne({ where: { orderid: order_id } });
+        const order = await Order.findOne({ where: { orderid: order_id }});
         if (!order) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-        const updateOrderPromise = order.update({ paymentid: payment_id, status: 'SUCCESSFUL' });
-        const updateUserPromise = req.user.update({ ispremiumuser: true });
+        const updateUserPromise = User.update(
+            { ispremiumuser: true },
+            {where:{id:req.user.id},transaction:t}
+        );
+        const updateOrderPromise = order.update(
+            {paymentid: payment_id, status: 'SUCCESSFUL' },
+            {transaction:t}
+        );
 
         await Promise.all([updateOrderPromise, updateUserPromise]);
 
+        await t.commit();
+
         res.status(202).json({ success: true, message: "Transaction Successful" });
     } catch (err) {
+        await t.rollback();
         console.error('Error in updateTransactionStatus:', err);
         res.status(500).json({ error: err.message || "Something went wrong" });
     }

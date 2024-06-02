@@ -1,7 +1,49 @@
-//const baseUrl ='http://34.229.9.143:3000'; 
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const itemsPerPage = localStorage.getItem('itemsPerPage') || '2';
+
+    const paginationNums = document.getElementById('paginationNums');
+    paginationNums.value = itemsPerPage ;
+
+    paginationNums.addEventListener('change',async function() {
+        const selectedValue = paginationNums.value;
+        localStorage.setItem('itemsPerPage', selectedValue);
+        await getExpenses()
+      })
+
+    displayPremiumStatus();
+    await getExpenses()
+  } catch (error) {
+    console.error('Failed to load expenses or premium status:', error);
+  }
+});
 
 
-//const baseUrl = 'http://localhost:3000';
+async function displayExpenseOnScreen(expenseDetails) {
+  try{   
+    const parentElem = document.getElementById('expenseList');
+      
+    const listItem = document.createElement('li');
+    listItem.textContent = `${expenseDetails.amount} - ${expenseDetails.description} - ${expenseDetails.category}`;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.onclick = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`/expenses/${expenseDetails.id}`,{headers:{"authorization":token}});
+        parentElem.removeChild(listItem);
+      } catch (error) {
+        console.error('Delete failed:', error);
+      }
+    };
+    listItem.appendChild(deleteButton);
+    parentElem.appendChild(listItem);
+  }catch(err){
+    console.log(err);
+  }
+}
 
 const showpagination=async(data)=>{
   try{
@@ -34,7 +76,7 @@ const showpagination=async(data)=>{
 
 const getExpenses=async(page=1)=>{
   try{
-    const itemsPerPage = localStorage.getItem('itemsPerPage');
+    const itemsPerPage = localStorage.getItem('itemsPerPage') || '2';
     const token = localStorage.getItem('token');
     const expensesResponse = await axios.get(`/expenses/get`, {
        params: { 
@@ -54,24 +96,7 @@ const getExpenses=async(page=1)=>{
   }
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const paginationNums = document.getElementById('paginationNums');
-    const itemsPerPage = localStorage.getItem('itemsPerPage');
-    paginationNums.value = itemsPerPage || '2';
-    paginationNums.addEventListener('change',async function() {
-        const selectedValue = paginationNums.value;
-        localStorage.setItem('itemsPerPage', selectedValue);
-        await getExpenses()
-      })
-    displayPremiumStatus();
-    await getExpenses()
-  } catch (error) {
-    console.error('Failed to load expenses or premium status:', error);
-  }
-});
-
-document.getElementById('form').onsubmit=async(event)=> {
+document.getElementById('form').addEventListener('submit' ,async(event)=> {
   event.preventDefault();
 
   const amount = document.getElementById('amount').value;
@@ -83,6 +108,7 @@ document.getElementById('form').onsubmit=async(event)=> {
     description: description,
     category: category 
   };
+  
   try {
     const token = localStorage.getItem('token');
     const response = await axios.post(`/expenses/post`, expenseObj,{headers:{"authorization":token}});    
@@ -91,51 +117,30 @@ document.getElementById('form').onsubmit=async(event)=> {
   } catch (error) {
     console.error('Expense addition failed:', error);
   }
-}
-
-async function displayExpenseOnScreen(expenseDetails) {
-  try{   
-    const parentElem = document.getElementById('expenseList');
-      
-    const listItem = document.createElement('li');
-    listItem.textContent = `${expenseDetails.amount} - ${expenseDetails.description} - ${expenseDetails.category}`;
-
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.onclick = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/expenses/${expenseDetails.id}`,{headers:{"authorization":token}});
-        parentElem.removeChild(listItem);
-      } catch (error) {
-        console.error('Delete failed:', error);
-      }
-    };
-    listItem.appendChild(deleteButton);
-    parentElem.appendChild(listItem);
-  }catch(err){
-    console.log(err);
-  }
-}
+});
 
 //dealing with premium membership
 
-document.getElementById('rzp-button1').onclick = async function (e) {
+document.getElementById('rzp-button1').addEventListener('click' ,async function (e) {
   const token = localStorage.getItem('token');
   try {
     const response = await axios.get(`/purchase/premiummembership`, { headers: { "Authorization": token } });
 
-    var options = {
+    var options = {  
       "key": response.data.key_id,
       "order_id": response.data.order.id,
       "handler": async function (response) {
         try {
-          await axios.post(`/purchase/updatetransactionstatus`, {
+          const postResponse=await axios.post(`/purchase/updatetransactionstatus`, {
             order_id: options.order_id,
             payment_id: response.razorpay_payment_id,
-          }, { headers: { "Authorization": token } });
-          displayPremiumStatus()
-          alert('You are a Premium User Now');
+          },
+          { 
+            headers: { "Authorization": token }
+          });
+
+          displayPremiumStatus();
+          console.log(postResponse)
         } catch (error) {
           console.error('Error updating transaction status:', error);
         }
@@ -149,7 +154,7 @@ document.getElementById('rzp-button1').onclick = async function (e) {
     rzp1.on('payment.failed', async function (response) {
       try {
         console.log(response);
-        await axios.post(`/purchase/updateorderstatus`, {
+        await axios.post(`/purchase/updateFailedStatus`, {
           order_id: options.order_id,
         }, { headers: { "Authorization": token } });
         alert('Payment failed. Your order status has been updated.');
@@ -162,7 +167,8 @@ document.getElementById('rzp-button1').onclick = async function (e) {
     console.error('Error initiating premium membership purchase:', error);
     alert('Failed to initiate premium membership purchase. Please try again.');
   }
-};
+});
+
 const displayPremiumStatus = async()=> {
   try{
     const token = localStorage.getItem('token');
